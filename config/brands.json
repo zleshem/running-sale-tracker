@@ -1,0 +1,106 @@
+[
+  {
+    "name": "Tracksmith",
+    "store_base": "https://www.tracksmith.com",
+    "url": "https://www.tracksmith.com/collections/clearance-men/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "Bandit Running",
+    "store_base": "https://banditrunning.com",
+    "url": "https://banditrunning.com/collections/winter-26-sale/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "District Vision (Men's)",
+    "store_base": "https://districtvision.com",
+    "url": "https://districtvision.com/collections/mens-sale/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "District Vision (Women's)",
+    "store_base": "https://districtvision.com",
+    "url": "https://districtvision.com/collections/womens-sale/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "Path Projects",
+    "store_base": "https://pathprojects.com",
+    "url": "https://pathprojects.com/collections/the-outlet/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "Oiselle",
+    "store_base": "https://www.oiselle.com",
+    "url": "https://www.oiselle.com/collections/sale/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "Janji",
+    "store_base": "https://www.janji.com",
+    "url": "https://www.janji.com/collections/sale/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "Craft (US)",
+    "store_base": "https://www.craftsports.us",
+    "url": "https://www.craftsports.us/collections/final-sale/products.json",
+    "currency": "USD",
+    "currency_confirmed": false,
+    "enabled": true
+  },
+  {
+    "name": "Ciele Athletics",
+    "store_base": "https://cieleathletics.com",
+    "url": "https://cieleathletics.com/collections/sale/products.json",
+    "currency": "USD",
+    "currency_confirmed": false,
+    "enabled": true
+  },
+  {
+    "name": "Satisfy",
+    "store_base": "https://satisfyrunning.com",
+    "url": "https://satisfyrunning.com/collections/shop-all/products.json",
+    "currency": "EUR",
+    "currency_confirmed": false,
+    "enabled": true
+  },
+  {
+    "name": "UNNA",
+    "store_base": "https://www.unna.com",
+    "url": "https://www.unna.com/collections/men-archive-sale/products.json",
+    "currency": "SEK",
+    "currency_confirmed": false,
+    "enabled": true
+  },
+  {
+    "name": "Rendezvous",
+    "store_base": "https://www.rendezvoussports.com",
+    "url": "https://www.rendezvoussports.com/collections/all/products.json",
+    "currency": "GBP",
+    "currency_confirmed": false,
+    "enabled": true
+  },
+  {
+    "name": "9pt9",
+    "store_base": "https://us.9pnt9.com",
+    "url": "https://us.9pnt9.com/collections/sale/products.json",
+    "currency": "HKD",
+    "currency_confirmed": false,
+    "enabled": true
+  }
+]

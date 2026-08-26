@@ -1,0 +1,40 @@
+name: Track Sales
+
+on:
+  schedule:
+    # Runs at the top of every hour. GitHub may delay this by a few minutes
+    # under load, and disables schedules on repos with no activity for 60 days
+    # (a scheduled run itself counts as activity, so this keeps itself alive).
+    - cron: '0 * * * *'
+  workflow_dispatch: {}   # lets you trigger a run manually from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Run tracker
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          PRICE_DROP_THRESHOLD_PCT: '5'
+        run: python scripts/tracker.py
+
+      - name: Commit updated data
+        run: |
+          git config user.name "sale-tracker-bot"
+          git config user.email "actions@github.com"
+          git add docs/data/ data/
+          git diff --quiet --cached || git commit -m "Update sale data $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push
