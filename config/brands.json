@@ -1,5 +1,5 @@
 [
-    {
+  {
     "name": "Bandit Running",
     "store_base": "https://banditrunning.com",
     "url": "https://banditrunning.com/collections/winter-26-sale/products.json",
@@ -11,14 +11,6 @@
     "name": "District Vision (Men's)",
     "store_base": "https://districtvision.com",
     "url": "https://districtvision.com/collections/mens-sale/products.json",
-    "currency": "USD",
-    "currency_confirmed": true,
-    "enabled": true
-  },
-  {
-    "name": "District Vision (Women's)",
-    "store_base": "https://districtvision.com",
-    "url": "https://districtvision.com/collections/womens-sale/products.json",
     "currency": "USD",
     "currency_confirmed": true,
     "enabled": true
@@ -53,6 +45,42 @@
     "url": "https://9pnt9.com/collections/sale/products.json?country=US",
     "currency": "USD",
     "currency_confirmed": true,
+    "enabled": true
+  }, 
+  {
+    "name": "Hermanos Koumori",
+    "store_base": "https://hermanoskoumori.com/",
+    "url": "https://www.hermanoskoumori.com/collections/sale/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "i love ugly",
+    "store_base": "https://www.iloveugly.com/",
+    "url": "https://www.iloveugly.com/collections/active-sale/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "gramicci",
+    "store_base": "https://www.gramicci.com/",
+    "url": "https://www.gramicci.com/collections/sale/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "MAAP",
+    "type": "shopify_storefront_graphql",
+    "store_base": "https://maap.cc",
+    "shop_domain": "maap-usa.myshopify.com",
+    "api_version": "2026-01",
+    "storefront_token": "30f853242eb81fc4de306a58e2f959d8",
+    "collection_handle": "archive-sale-man",
+    "currency": "USD",
+    "currency_confirmed": false,
     "enabled": true
   }
 ]

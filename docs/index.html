@@ -58,6 +58,8 @@
     max-width:1200px; margin: 18px auto 0; padding: 0 24px;
     display:flex; flex-wrap:wrap; gap:10px; align-items:center;
   }
+  #typeControls{ margin-top:8px; }
+  #typeControls .chip{ border-color: rgba(212,255,61,0.25); }
   .chip{
     font-family:'JetBrains Mono', monospace; font-size:12px;
     border:1px solid var(--line); background:var(--surface); color:var(--muted);
@@ -191,6 +193,11 @@
   </select>
 </div>
 
+<div class="controls" id="typeControls" style="display:none;">
+  <span class="meta" style="margin-right:2px;">TYPE</span>
+  <span class="chip active" data-type="__all__">ALL TYPES</span>
+</div>
+
 <main>
   <div id="errorsBox"></div>
   <div class="grid" id="grid"></div>
@@ -211,6 +218,7 @@ async function load() {
   const grid = document.getElementById('grid');
   const meta = document.getElementById('meta');
   const controls = document.getElementById('controls');
+  const typeControls = document.getElementById('typeControls');
   const emptyState = document.getElementById('emptyState');
   const errorsBox = document.getElementById('errorsBox');
 
@@ -254,13 +262,55 @@ async function load() {
   document.querySelector('.chip[data-brand="__all__"]').addEventListener('click', () => selectBrand('__all__'));
 
   let currentBrand = '__all__';
+  let currentType = '__all__';
   let currentSort = 'discount';
 
   function selectBrand(b) {
     currentBrand = b;
-    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.brand === b));
+    currentType = '__all__';
+    document.querySelectorAll('#controls .chip').forEach(c => c.classList.toggle('active', c.dataset.brand === b));
+    rebuildTypeChips();
     render();
   }
+
+  function selectType(t) {
+    currentType = t;
+    document.querySelectorAll('#typeControls .chip').forEach(c => c.classList.toggle('active', c.dataset.type === t));
+    render();
+  }
+
+  function rebuildTypeChips() {
+    // Remove any previously-built type chips (keep the "ALL TYPES" one and the label)
+    typeControls.querySelectorAll('.chip[data-type]:not([data-type="__all__"])').forEach(el => el.remove());
+
+    if (currentBrand === '__all__') {
+      typeControls.style.display = 'none';
+      return;
+    }
+
+    const scoped = items.filter(i => i.brand === currentBrand);
+    const types = [...new Set(scoped.map(i => i.product_type).filter(Boolean))].sort();
+
+    if (types.length <= 1) {
+      // Nothing meaningful to filter by for this brand
+      typeControls.style.display = 'none';
+      return;
+    }
+
+    typeControls.style.display = 'flex';
+    types.forEach(t => {
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.dataset.type = t;
+      chip.textContent = t.toUpperCase();
+      chip.tabIndex = 0;
+      chip.addEventListener('click', () => selectType(t));
+      chip.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') selectType(t); });
+      typeControls.appendChild(chip);
+    });
+  }
+
+  document.querySelector('#typeControls .chip[data-type="__all__"]').addEventListener('click', () => selectType('__all__'));
 
   document.getElementById('sortSel').addEventListener('change', e => {
     currentSort = e.target.value;
@@ -269,6 +319,7 @@ async function load() {
 
   function render() {
     let filtered = currentBrand === '__all__' ? items.slice() : items.filter(i => i.brand === currentBrand);
+    if (currentType !== '__all__') filtered = filtered.filter(i => i.product_type === currentType);
 
     if (currentSort === 'discount') filtered.sort((a,b) => b.best_discount_pct - a.best_discount_pct);
     else if (currentSort === 'new') filtered.sort((a,b) => (b.is_new === a.is_new) ? b.best_discount_pct - a.best_discount_pct : (b.is_new ? 1 : -1));
@@ -331,7 +382,7 @@ function card(item, rank) {
       ${item.image ? `<img loading="lazy" src="${item.image}" alt="${escapeHtml(item.title)}">` : '<span class="none">no image</span>'}
     </div>
     <div class="body">
-      <div class="brandline">${escapeHtml(item.brand)}</div>
+      <div class="brandline">${escapeHtml(item.brand)} · ${escapeHtml(item.product_type || 'Uncategorized')}</div>
       <div class="title">${escapeHtml(item.title)}</div>
       ${variantTags ? `<div class="variants">${variantTags}</div>` : ''}
       <div class="split">

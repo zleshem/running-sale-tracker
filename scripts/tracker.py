@@ -38,26 +38,26 @@ DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
 NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "").strip()
 
 FX_API_URL = "https://api.frankfurter.app/latest"  # free, no API key, ECB reference rates
+_fx_cache = {}
 
 
-def get_fx_rates(currencies):
-    """Return {currency_code: units_per_1_USD} for every non-USD currency needed.
-    Falls back gracefully (returns {}) if the FX API is unreachable — in that case
-    non-USD brands will be flagged rather than silently mislabeled as USD."""
-    needed = sorted({c for c in currencies if c and c != "USD"})
-    if not needed:
-        return {}
+def get_usd_rate(currency):
+    """Return units of `currency` per 1 USD, cached per run. Returns None (and
+    prints a warning) if a rate can't be fetched — callers must treat that as
+    'do not convert, show native currency with a warning' rather than assuming 1.0."""
+    if not currency or currency == "USD":
+        return 1.0
+    if currency in _fx_cache:
+        return _fx_cache[currency]
     try:
-        resp = requests.get(
-            FX_API_URL,
-            params={"from": "USD", "to": ",".join(needed)},
-            timeout=10,
-        )
+        resp = requests.get(FX_API_URL, params={"from": "USD", "to": currency}, timeout=10)
         resp.raise_for_status()
-        return resp.json().get("rates", {})
+        rate = resp.json().get("rates", {}).get(currency)
     except Exception as e:
-        print(f"  ! FX rate fetch failed, non-USD prices will be flagged instead of converted: {e}")
-        return {}
+        print(f"  ! FX rate fetch failed for {currency}: {e}")
+        rate = None
+    _fx_cache[currency] = rate
+    return rate
 
 
 # --------------------------------------------------------------------------
@@ -135,6 +135,126 @@ def fetch_products(url):
     return all_products
 
 
+STOREFRONT_GRAPHQL_QUERY = """
+query CollectionProducts($handle: String!, $cursor: String) {
+  collection(handle: $handle) {
+    products(first: 50, after: $cursor) {
+      pageInfo { hasNextPage endCursor }
+      edges {
+        node {
+          id
+          title
+          handle
+          productType
+          onlineStoreUrl
+          images(first: 1) { edges { node { url } } }
+          options { name }
+          variants(first: 100) {
+            edges {
+              node {
+                id
+                title
+                availableForSale
+                price { amount currencyCode }
+                compareAtPrice { amount currencyCode }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+"""
+
+
+def fetch_products_graphql(brand):
+    """Fetch a collection via Shopify's public Storefront GraphQL API. Used for
+    stores that block the legacy products.json REST feed. Returns a list of
+    products normalized into the same shape fetch_products() returns, with one
+    addition: each variant carries an explicit "currency" (from the API's own
+    currencyCode) and each product carries a "url" (the real localized URL),
+    so no currency-guessing or URL-guessing is needed for these brands."""
+    shop_domain = brand["shop_domain"]
+    token = brand["storefront_token"]
+    api_version = brand.get("api_version", "2026-01")
+    handle = brand["collection_handle"]
+    endpoint = f"https://{shop_domain}/api/{api_version}/graphql.json"
+    headers = {
+        "Content-Type": "application/json",
+        "X-Shopify-Storefront-Access-Token": token,
+    }
+
+    products = []
+    cursor = None
+
+    while True:
+        try:
+            resp = requests.post(
+                endpoint,
+                headers=headers,
+                json={"query": STOREFRONT_GRAPHQL_QUERY, "variables": {"handle": handle, "cursor": cursor}},
+                timeout=15,
+            )
+            resp.raise_for_status()
+            payload = resp.json()
+        except Exception as e:
+            print(f"  ! GraphQL fetch failed for {shop_domain}: {e}")
+            return products if products else None
+
+        if "errors" in payload:
+            print(f"  ! GraphQL errors from {shop_domain}: {payload['errors']}")
+            return products if products else None
+
+        collection = (payload.get("data") or {}).get("collection")
+        if not collection:
+            print(f"  ! Collection '{handle}' not found on {shop_domain}")
+            return None
+
+        conn = collection["products"]
+        for edge in conn["edges"]:
+            node = edge["node"]
+            product_id = int(node["id"].rsplit("/", 1)[-1])
+
+            image_edges = (node.get("images") or {}).get("edges", [])
+            images = [{"src": image_edges[0]["node"]["url"]}] if image_edges else []
+
+            variants = []
+            for vedge in node["variants"]["edges"]:
+                vnode = vedge["node"]
+                variant_id = int(vnode["id"].rsplit("/", 1)[-1])
+                price_obj = vnode.get("price") or {}
+                compare_obj = vnode.get("compareAtPrice") or {}
+                variants.append({
+                    "id": variant_id,
+                    "title": vnode.get("title"),
+                    "price": price_obj.get("amount"),
+                    "compare_at_price": compare_obj.get("amount"),
+                    "available": vnode.get("availableForSale", False),
+                    "currency": price_obj.get("currencyCode"),  # authoritative, straight from Shopify
+                })
+
+            products.append({
+                "id": product_id,
+                "title": node.get("title", "Untitled"),
+                "handle": node.get("handle", ""),
+                "product_type": node.get("productType") or "",
+                "url": node.get("onlineStoreUrl"),  # real localized URL, no guessing needed
+                "images": images,
+                "options": node.get("options", []),
+                "variants": variants,
+            })
+
+        page_info = conn["pageInfo"]
+        if page_info.get("hasNextPage"):
+            cursor = page_info.get("endCursor")
+            time.sleep(1)
+        else:
+            break
+
+    return products
+
+
 # --------------------------------------------------------------------------
 # Notifications
 # --------------------------------------------------------------------------
@@ -182,30 +302,28 @@ def main():
     errors = []
 
     active_brands = [b for b in brands if b.get("enabled", True)]
-    fx_rates = get_fx_rates(b.get("currency", "USD") for b in active_brands)
 
     for brand in active_brands:
         name = brand["name"]
-        url = brand["url"]
-        store_base = brand.get("store_base") or f"{urlparse(url).scheme}://{urlparse(url).netloc}"
-        currency = brand.get("currency", "USD")
+        brand_type = brand.get("type", "shopify_json")
+        fallback_currency = brand.get("currency", "USD")
         currency_confirmed = brand.get("currency_confirmed", False)
 
-        # units of `currency` per 1 USD; None means we couldn't convert
-        if currency == "USD":
-            usd_rate = 1.0
+        if brand_type == "shopify_storefront_graphql":
+            source_desc = f"{brand.get('shop_domain')} (Storefront GraphQL, collection={brand.get('collection_handle')})"
+            print(f"Fetching {name} -> {source_desc}")
+            products = fetch_products_graphql(brand)
         else:
-            usd_rate = fx_rates.get(currency)
-            if usd_rate is None:
-                errors.append(
-                    f"{name}: no FX rate available for {currency} this run — "
-                    f"prices shown in {currency}, NOT converted to USD."
-                )
+            url = brand["url"]
+            print(f"Fetching {name} -> {url}")
+            products = fetch_products(url)
 
-        print(f"Fetching {name} -> {url}")
-        products = fetch_products(url)
+        store_base = brand.get("store_base") or (
+            f"{urlparse(brand['url']).scheme}://{urlparse(brand['url']).netloc}" if brand.get("url") else ""
+        )
+
         if products is None:
-            msg = f"{name}: failed to fetch {url} — endpoint may be down, renamed, or blocked."
+            msg = f"{name}: failed to fetch feed — endpoint may be down, renamed, or blocked."
             print(f"  ! {msg}")
             errors.append(msg)
             continue
@@ -216,7 +334,8 @@ def main():
             product_id = product.get("id")
             title = product.get("title", "Untitled")
             handle = product.get("handle", "")
-            product_url = f"{store_base}/products/{handle}"
+            product_type = product.get("product_type") or "Uncategorized"
+            product_url = product.get("url") or f"{store_base}/products/{handle}"
             images = product.get("images", [])
             image_url = images[0]["src"] if images else (product.get("image") or {}).get("src")
             options = product.get("options", [])
@@ -256,6 +375,18 @@ def main():
                 variant_id = v.get("id")
                 available = bool(v.get("available", False))
 
+                # GraphQL-sourced variants carry their own authoritative currency
+                # straight from Shopify; REST-sourced variants fall back to the
+                # brand-level config value.
+                variant_currency = v.get("currency") or fallback_currency
+                variant_currency_authoritative = bool(v.get("currency"))
+                usd_rate = get_usd_rate(variant_currency)
+                if usd_rate is None:
+                    errors.append(
+                        f"{name}: no FX rate available for {variant_currency} this run — "
+                        f"'{title}' shown in {variant_currency}, NOT converted to USD."
+                    )
+
                 # Look up the most recent previously-seen price for this variant
                 cur.execute(
                     """SELECT price FROM variant_history
@@ -272,7 +403,7 @@ def main():
                         notify(
                             f"Price drop — {name}",
                             f"{title} ({v.get('title')}) dropped {drop_pct}%: "
-                            f"${prev_price:.2f} -> ${price:.2f}\n{product_url}",
+                            f"{prev_price:.2f} -> {price:.2f} {variant_currency}\n{product_url}",
                         )
 
                 cur.execute(
@@ -294,7 +425,9 @@ def main():
                     "compare_at_price": compare_at,
                     "price_usd": price_usd,
                     "compare_at_price_usd": compare_at_usd,
-                    "currency": currency,
+                    "currency": variant_currency,
+                    "currency_confirmed": currency_confirmed or variant_currency_authoritative,
+                    "fx_converted": usd_rate is not None,
                     "discount_pct": discount_pct,
                     "available": available,
                 }
@@ -317,13 +450,14 @@ def main():
             dashboard_items.append({
                 "brand": name,
                 "title": title,
+                "product_type": product_type,
                 "product_url": product_url,
                 "image": image_url,
                 "is_new": is_new_product,
                 "best_discount_pct": best_discount_pct,
-                "currency": currency,
-                "currency_confirmed": currency_confirmed,
-                "fx_converted": usd_rate is not None,
+                "currency": best_variant["currency"] if best_variant else fallback_currency,
+                "currency_confirmed": best_variant["currency_confirmed"] if best_variant else currency_confirmed,
+                "fx_converted": best_variant["fx_converted"] if best_variant else False,
                 "msrp": best_variant["compare_at_price"] if best_variant else None,
                 "sale_price": best_variant["price"] if best_variant else None,
                 "msrp_usd": best_variant["compare_at_price_usd"] if best_variant else None,

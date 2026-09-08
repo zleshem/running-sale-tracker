@@ -2,11 +2,8 @@ name: Track Sales
 
 on:
   schedule:
-    # Runs at the top of every hour. GitHub may delay this by a few minutes
-    # under load, and disables schedules on repos with no activity for 60 days
-    # (a scheduled run itself counts as activity, so this keeps itself alive).
     - cron: '0 * * * *'
-  workflow_dispatch: {}   # lets you trigger a run manually from the Actions tab
+  workflow_dispatch: {}
 
 permissions:
   contents: write
@@ -24,6 +21,23 @@ jobs:
       - name: Install dependencies
         run: pip install -r scripts/requirements.txt
 
+      # data/history.db is deliberately NOT committed to git (it's a binary
+      # file that would otherwise bloat the repo forever — every commit stores
+      # a full new copy in git history). Instead it's persisted between runs
+      # using Actions cache. Cache entries in GitHub Actions are immutable per
+      # key, so we restore from the most recent previous run's key (via
+      # restore-keys prefix matching) and always save under a fresh key
+      # (suffixed with this run's ID). Old entries age out automatically
+      # after 7 days of no use, or under the account's cache size limit —
+      # nothing to maintain manually.
+      - name: Restore price history cache
+        uses: actions/cache/restore@v4
+        with:
+          path: data/history.db
+          key: history-db-${{ github.run_id }}
+          restore-keys: |
+            history-db-
+
       - name: Run tracker
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
@@ -31,10 +45,16 @@ jobs:
           PRICE_DROP_THRESHOLD_PCT: '5'
         run: python scripts/tracker.py
 
-      - name: Commit updated data
+      - name: Save price history cache
+        uses: actions/cache/save@v4
+        with:
+          path: data/history.db
+          key: history-db-${{ github.run_id }}
+
+      - name: Commit updated dashboard data
         run: |
           git config user.name "sale-tracker-bot"
           git config user.email "actions@github.com"
-          git add docs/data/ data/
+          git add docs/data/
           git diff --quiet --cached || git commit -m "Update sale data $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           git push
