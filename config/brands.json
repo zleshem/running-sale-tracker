@@ -56,9 +56,33 @@
     "enabled": true
   },
   {
-    "name": "i love ugly",
+    "name": "i love ugly active",
     "store_base": "https://www.iloveugly.com/",
     "url": "https://www.iloveugly.com/collections/active-sale/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "i love ugly",
+    "store_base": "https://www.iloveugly.com/",
+    "url": "https://www.iloveugly.com/collections/sale-section/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "praise endurance",
+    "store_base": "https://www.praiseendurance.com/",
+    "url": "https://www.praiseendurance.com/collections/final-sale/products.json?country=US",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "cafe du cycliste",
+    "store_base": "https://www.cafeducycliste.com/",
+    "url": "https://www.cafeducycliste.com/en-row/collections/sale/products.json",
     "currency": "USD",
     "currency_confirmed": true,
     "enabled": true
