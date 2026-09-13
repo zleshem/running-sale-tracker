@@ -96,6 +96,38 @@
     "enabled": true
   },
   {
+    "name": "Ante Berlin",
+    "store_base": "https://anteberlin.com/",
+    "url": "https://anteberlin.com/collections/archive/products.json?country=US",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "Participation",
+    "store_base": "https://participationco.com/",
+    "url": "https://participationco.com/collections/all-products.json?country=US",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "Bilma",
+    "store_base": "https://bilmaclub.com/",
+    "url": "https://bilmaclub.com/en-intl/collections/men/products.json?country=US",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "Patencials",
+    "store_base": "https://patencials.com/",
+    "url": "https://patencials.com/collections/all/products.json?country=US",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
     "name": "MAAP",
     "type": "shopify_storefront_graphql",
     "store_base": "https://maap.cc",
