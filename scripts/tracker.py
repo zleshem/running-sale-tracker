@@ -2,12 +2,10 @@
 """
 Sale Tracker
 ------------
-Polls each brand's Shopify `products.json` feed (as listed in config/brands.json),
-detects new sale items and price drops, and writes docs/data/latest.json for the
-dashboard (docs/index.html) to read. Optionally sends Discord / ntfy.sh notifications.
-
-Run manually with:  python scripts/tracker.py
-Normally run on a schedule by .github/workflows/track.yml
+Polls each brand's Shopify products.json (REST) or Storefront GraphQL feed
+(as listed in config/brands.json), detects new sale items, price drops, and
+all-time-low prices, and writes docs/data/latest.json for the dashboard to
+read. Optionally sends Discord / ntfy.sh notifications.
 """
 
 import json
@@ -103,7 +101,7 @@ def prune_history(conn):
 
 
 # --------------------------------------------------------------------------
-# Fetching
+# Fetching — REST (Shopify products.json)
 # --------------------------------------------------------------------------
 
 def fetch_products(url):
@@ -134,6 +132,10 @@ def fetch_products(url):
         time.sleep(1)
     return all_products
 
+
+# --------------------------------------------------------------------------
+# Fetching — Shopify Storefront GraphQL (for brands that block products.json)
+# --------------------------------------------------------------------------
 
 STOREFRONT_GRAPHQL_QUERY = """
 query CollectionProducts($handle: String!, $cursor: String) {
@@ -169,12 +171,11 @@ query CollectionProducts($handle: String!, $cursor: String) {
 
 
 def fetch_products_graphql(brand):
-    """Fetch a collection via Shopify's public Storefront GraphQL API. Used for
-    stores that block the legacy products.json REST feed. Returns a list of
-    products normalized into the same shape fetch_products() returns, with one
-    addition: each variant carries an explicit "currency" (from the API's own
-    currencyCode) and each product carries a "url" (the real localized URL),
-    so no currency-guessing or URL-guessing is needed for these brands."""
+    """Fetch a collection via Shopify's public Storefront GraphQL API. Returns
+    a list of products normalized into the same shape fetch_products() returns,
+    with each variant carrying an explicit "currency" (authoritative, from the
+    API's own currencyCode) and each product carrying a "url" (real localized
+    URL) — no currency-guessing or URL-guessing needed for these brands."""
     shop_domain = brand["shop_domain"]
     token = brand["storefront_token"]
     api_version = brand.get("api_version", "2026-01")
@@ -231,7 +232,7 @@ def fetch_products_graphql(brand):
                     "price": price_obj.get("amount"),
                     "compare_at_price": compare_obj.get("amount"),
                     "available": vnode.get("availableForSale", False),
-                    "currency": price_obj.get("currencyCode"),  # authoritative, straight from Shopify
+                    "currency": price_obj.get("currencyCode"),
                 })
 
             products.append({
@@ -239,7 +240,7 @@ def fetch_products_graphql(brand):
                 "title": node.get("title", "Untitled"),
                 "handle": node.get("handle", ""),
                 "product_type": node.get("productType") or "",
-                "url": node.get("onlineStoreUrl"),  # real localized URL, no guessing needed
+                "url": node.get("onlineStoreUrl"),
                 "images": images,
                 "options": node.get("options", []),
                 "variants": variants,
@@ -308,6 +309,7 @@ def main():
         brand_type = brand.get("type", "shopify_json")
         fallback_currency = brand.get("currency", "USD")
         currency_confirmed = brand.get("currency_confirmed", False)
+        brand_blurb = brand.get("blurb", "")
 
         if brand_type == "shopify_storefront_graphql":
             source_desc = f"{brand.get('shop_domain')} (Storefront GraphQL, collection={brand.get('collection_handle')})"
@@ -375,9 +377,6 @@ def main():
                 variant_id = v.get("id")
                 available = bool(v.get("available", False))
 
-                # GraphQL-sourced variants carry their own authoritative currency
-                # straight from Shopify; REST-sourced variants fall back to the
-                # brand-level config value.
                 variant_currency = v.get("currency") or fallback_currency
                 variant_currency_authoritative = bool(v.get("currency"))
                 usd_rate = get_usd_rate(variant_currency)
@@ -387,7 +386,7 @@ def main():
                         f"'{title}' shown in {variant_currency}, NOT converted to USD."
                     )
 
-                # Look up the most recent previously-seen price for this variant
+                # Most recent previously-seen price for this variant (for drop detection)
                 cur.execute(
                     """SELECT price FROM variant_history
                        WHERE brand=? AND variant_id=?
@@ -413,6 +412,15 @@ def main():
                     (name, product_id, variant_id, price, compare_at, int(available), now),
                 )
 
+                # All-time-low check: MIN() here includes the row we just inserted,
+                # so this correctly reflects "lowest ever recorded, including today".
+                cur.execute(
+                    "SELECT MIN(price) FROM variant_history WHERE brand=? AND variant_id=? AND price > 0",
+                    (name, variant_id),
+                )
+                lowest_ever = cur.fetchone()[0]
+                is_lowest_ever = bool(lowest_ever is not None and price > 0 and price <= lowest_ever)
+
                 price_usd = round(price / usd_rate, 2) if usd_rate else None
                 compare_at_usd = round(compare_at / usd_rate, 2) if (usd_rate and compare_at) else None
 
@@ -430,13 +438,13 @@ def main():
                     "fx_converted": usd_rate is not None,
                     "discount_pct": discount_pct,
                     "available": available,
+                    "is_lowest_ever": is_lowest_ever,
                 }
                 variant_rows.append(vr)
                 if discount_pct > best_discount_pct:
                     best_discount_pct = discount_pct
                     best_variant = vr
 
-            # Only surface items that are actually discounted somewhere
             if best_discount_pct <= 0:
                 continue
 
@@ -449,11 +457,13 @@ def main():
 
             dashboard_items.append({
                 "brand": name,
+                "brand_blurb": brand_blurb,
                 "title": title,
                 "product_type": product_type,
                 "product_url": product_url,
                 "image": image_url,
                 "is_new": is_new_product,
+                "is_lowest_ever": best_variant["is_lowest_ever"] if best_variant else False,
                 "best_discount_pct": best_discount_pct,
                 "currency": best_variant["currency"] if best_variant else fallback_currency,
                 "currency_confirmed": best_variant["currency_confirmed"] if best_variant else currency_confirmed,

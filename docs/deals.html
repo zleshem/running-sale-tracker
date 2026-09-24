@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sale Rack — real markdowns from independent run & ride brands</title>
+<meta name="description" content="Hourly-tracked discounts from independent running and cycling brands. No sitewide sales, no fake urgency — just the real markdowns, sorted by depth.">
+<meta property="og:title" content="The Sale Rack">
+<meta property="og:description" content="Real, tracked discounts from independent running and cycling brands.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #EDEAE1;
+    --paper-line: #C9C4B7;
+    --ink: #14171A;
+    --ink-soft: #4A4E48;
+    --bib-red: #B23B2E;
+    --trail-green: #3F5E52;
+    --card-bg: #F6F4EE;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    line-height: 1.5;
+  }
+  .wrap{ max-width: 780px; margin: 0 auto; padding: 40px 20px 100px; }
+
+  /* header */
+  header{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    border-bottom: 2px solid var(--ink); padding-bottom: 16px; margin-bottom: 28px;
+    flex-wrap: wrap; gap: 10px;
+  }
+  .wordmark{
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 700;
+    font-size: 34px;
+    letter-spacing: 0.5px;
+    margin: 0;
+  }
+  .status{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    text-align: right;
+  }
+  .status strong{ color: var(--ink); }
+
+  .intro{
+    font-size: 15px;
+    color: var(--ink-soft);
+    max-width: 60ch;
+    margin: 0 0 32px;
+  }
+
+  /* email capture */
+  .signup{
+    background: var(--card-bg);
+    border: 1px solid var(--paper-line);
+    border-left: 4px solid var(--bib-red);
+    padding: 18px 20px;
+    margin-bottom: 40px;
+  }
+  .signup h2{
+    font-size: 16px;
+    margin: 0 0 4px;
+    font-weight: 600;
+  }
+  .signup p{
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 14px;
+  }
+  .signup form{
+    display:flex; gap: 8px; flex-wrap: wrap;
+  }
+  .signup input[type=email]{
+    flex: 1 1 220px;
+    padding: 10px 12px;
+    border: 1px solid var(--paper-line);
+    background: #fff;
+    font-family: inherit;
+    font-size: 14px;
+  }
+  .signup input[type=email]:focus{ outline: 2px solid var(--trail-green); outline-offset: 1px; }
+  .signup button{
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .signup button:hover{ background: var(--trail-green); }
+  .signup .fineprint{ font-size: 11px; color: var(--ink-soft); margin-top: 8px; }
+  /* honeypot field, hidden from real people */
+  .hp{ position:absolute; left:-9999px; }
+
+  /* brand sections */
+  .brand-section{ margin-bottom: 36px; }
+  .brand-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 6px; margin-bottom: 10px;
+  }
+  .brand-name{ font-size: 18px; font-weight: 600; margin:0; }
+  .brand-meta{ font-family:'IBM Plex Mono', monospace; font-size: 11px; color: var(--ink-soft); }
+
+  .deal-row{
+    display:grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 14px;
+    align-items:center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--paper-line);
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .deal-row:hover .deal-name{ text-decoration: underline; }
+  .deal-thumb{
+    width:56px; height:56px; object-fit:cover;
+    background: var(--card-bg);
+    border: 1px solid var(--paper-line);
+  }
+  .deal-name{ font-size: 14px; font-weight: 500; }
+  .deal-sub{ font-size: 12px; color: var(--ink-soft); margin-top:2px; }
+  .deal-price{ text-align:right; white-space:nowrap; }
+  .discount{
+    font-family:'Big Shoulders Display', sans-serif;
+    font-weight: 700; font-size: 20px; color: var(--bib-red);
+    line-height: 1;
+  }
+  .price-line{ font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
+  .was{ text-decoration: line-through; margin-right: 4px; }
+
+  .feed-issue{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--bib-red);
+    margin: 4px 0 0;
+  }
+
+  .empty-state{
+    border: 1px dashed var(--paper-line);
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+
+  footer{
+    margin-top: 50px;
+    padding-top: 16px;
+    border-top: 1px solid var(--paper-line);
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="wordmark">The Sale Rack</p>
+    <div class="status" id="status">loading feed…</div>
+  </header>
+
+  <p class="intro">
+    Real markdowns from independent running and cycling brands, checked every hour
+    straight from each brand's own storefront. Sorted by how deep the discount actually is —
+    not by who paid for placement.
+  </p>
+
+  <div class="signup">
+    <h2>Get alerted when your brands drop</h2>
+    <p>One email when a brand or category you care about goes on sale. No daily digest spam.</p>
+    <!--
+      Swap YOUR_FORM_ID for a real Formspree endpoint (free tier, no backend needed):
+      1. Create a free account at formspree.io
+      2. Create a new form, copy its endpoint ID
+      3. Replace the action URL below
+    -->
+    <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off">
+      <input type="email" name="email" placeholder="you@example.com" required>
+      <button type="submit">Notify me</button>
+    </form>
+    <p class="fineprint">Unsubscribe anytime. We only email about brands/categories you pick.</p>
+  </div>
+
+  <div id="deals">
+    <div class="empty-state">Loading tracked deals…</div>
+  </div>
+
+  <footer>
+    Prices and discounts are pulled from each brand's own storefront feed and may change
+    or sell out before checkout. Always confirm on the brand's site.
+  </footer>
+
+</div>
+
+<script>
+/*
+  ── Data contract this page expects from docs/data/latest.json ──
+
+  This maps loosely to what scripts/tracker.py already tracks. Adjust the field
+  names inside `normalizeDeal()` below to match your actual latest.json shape —
+  everything else on the page works off the normalized object it returns.
+
+  Expected (flexible) shape per deal item:
+  {
+    brand: "Bandit Running",
+    name: "Distance Tee",
+    url: "https://banditrunning.com/products/distance-tee",
+    image: "https://.../image.jpg",           // optional
+    price_usd: 28.00,
+    compare_at_price_usd: 42.00,
+    discount_pct: 33,                         // computed if missing
+    currency_confirmed: true,                 // optional
+    is_new: true                              // optional
+  }
+
+  Expected shape for feed problems (optional, brand-level):
+  { brand: "Some Brand", feed_ok: false, error: "404 on sale collection" }
+*/
+
+const DATA_URL = "./docs/data/latest.json"; // adjust path if this file lives elsewhere relative to docs/
+
+// ── Affiliate link wrapping ──
+// Fill this in per brand once a program is approved. Left empty = raw product URL.
+// Example once approved:
+//   "Rapha": (url) => `https://www.awin1.com/cread.php?awinmid=XXXX&awinaffid=YYYY&ued=${encodeURIComponent(url)}`
+const AFFILIATE_WRAPPERS = {
+  // "Rapha": (url) => url,
+  // "MAAP": (url) => url,
+};
+
+function wrapAffiliateLink(brand, url) {
+  const wrapper = AFFILIATE_WRAPPERS[brand];
+  return wrapper ? wrapper(url) : url;
+}
+
+function normalizeDeal(raw) {
+  const price = raw.price_usd ?? raw.price ?? null;
+  const compareAt = raw.compare_at_price_usd ?? raw.compare_at_price ?? null;
+  let discount = raw.discount_pct;
+  if (discount == null && price != null && compareAt != null && compareAt > 0) {
+    discount = Math.round((1 - price / compareAt) * 100);
+  }
+  return {
+    brand: raw.brand ?? raw.brand_name ?? "Unknown brand",
+    name: raw.name ?? raw.title ?? "Untitled item",
+    url: raw.url ?? raw.product_url ?? "#",
+    image: raw.image ?? raw.image_url ?? null,
+    price,
+    compareAt,
+    discount: discount ?? 0,
+    currencyConfirmed: raw.currency_confirmed !== false,
+    isNew: !!raw.is_new,
+  };
+}
+
+function fmtPrice(n) {
+  return n == null ? "—" : `$${n.toFixed(2)}`;
+}
+
+function render(deals, feedIssues) {
+  const container = document.getElementById("deals");
+  container.innerHTML = "";
+
+  if (!deals.length) {
+    container.innerHTML = `<div class="empty-state">
+      No deals tracked yet. The tracker runs hourly — check back shortly,
+      or <a href="./" >see the raw dashboard</a>.
+    </div>`;
+    return;
+  }
+
+  const byBrand = {};
+  for (const d of deals) {
+    (byBrand[d.brand] ??= []).push(d);
+  }
+
+  const brandNames = Object.keys(byBrand).sort((a, b) => {
+    const maxA = Math.max(...byBrand[a].map(d => d.discount));
+    const maxB = Math.max(...byBrand[b].map(d => d.discount));
+    return maxB - maxA; // deepest-discount brand first
+  });
+
+  for (const brand of brandNames) {
+    const items = byBrand[brand].sort((a, b) => b.discount - a.discount);
+    const section = document.createElement("section");
+    section.className = "brand-section";
+
+    const issue = feedIssues.find(f => f.brand === brand);
+
+    section.innerHTML = `
+      <div class="brand-head">
+        <h2 class="brand-name">${brand}</h2>
+        <span class="brand-meta">${items.length} item${items.length === 1 ? "" : "s"} on sale</span>
+      </div>
+      ${issue ? `<p class="feed-issue">FEED ISSUE — ${issue.error ?? "couldn't reach this brand's feed"}</p>` : ""}
+    `;
+
+    for (const d of items) {
+      const row = document.createElement("a");
+      row.className = "deal-row";
+      row.href = wrapAffiliateLink(d.brand, d.url);
+      row.target = "_blank";
+      row.rel = "noopener sponsored";
+      row.innerHTML = `
+        ${d.image ? `<img class="deal-thumb" src="${d.image}" alt="" loading="lazy">` : `<div class="deal-thumb"></div>`}
+        <div>
+          <div class="deal-name">${d.name}${d.isNew ? " · new" : ""}</div>
+          <div class="deal-sub">${d.currencyConfirmed ? "" : "currency unconfirmed — check before buying"}</div>
+        </div>
+        <div class="deal-price">
+          <div class="discount">−${d.discount}%</div>
+          <div class="price-line">
+            ${d.compareAt ? `<span class="was">${fmtPrice(d.compareAt)}</span>` : ""}${fmtPrice(d.price)}
+          </div>
+        </div>
+      `;
+      section.appendChild(row);
+    }
+
+    container.appendChild(section);
+  }
+}
+
+async function load() {
+  const statusEl = document.getElementById("status");
+  try {
+    const res = await fetch(DATA_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    // Adjust these two lines if latest.json's top-level shape differs
+    const rawDeals = data.deals ?? data.items ?? [];
+    const feedIssues = data.feed_issues ?? data.brands_with_errors ?? [];
+
+    const deals = rawDeals.map(normalizeDeal);
+    render(deals, feedIssues);
+
+    const updated = data.last_updated ?? data.generated_at;
+    statusEl.innerHTML = `<strong>${deals.length}</strong> deals tracked` +
+      (updated ? ` · updated ${new Date(updated).toLocaleString()}` : "");
+  } catch (err) {
+    statusEl.textContent = "couldn't load feed";
+    document.getElementById("deals").innerHTML =
+      `<div class="empty-state">Couldn't load the deals feed (${err.message}). Check that ${DATA_URL} is reachable from this page.</div>`;
+  }
+}
+
+load();
+</script>
+</body>
+</html>

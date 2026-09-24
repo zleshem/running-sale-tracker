@@ -44,7 +44,10 @@ jobs:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           PRICE_DROP_THRESHOLD_PCT: '5'
         run: python scripts/tracker.py
-
+        
+      - name: Generate static brand pages
+        run: python scripts/generate_static_pages.py
+        
       - name: Save price history cache
         uses: actions/cache/save@v4
         with:

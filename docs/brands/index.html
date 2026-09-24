@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Browse brands — Sale Rack</title>
+<meta name="description" content="Every independent running and cycling brand we track for real discounts, one page per brand.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#0F1B14; --surface:#16261D; --line:#2A3D30; --hivis:#D4FF3D; --hazard:#FF5A36; --chalk:#EDEAE0; --muted:#8FA391; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--chalk); font-family:'Oswald',system-ui,sans-serif; }
+  .mono{ font-family:'JetBrains Mono',monospace; }
+  a{ color:inherit; }
+  header{ padding:24px; border-bottom:1px solid var(--line); }
+  header a.back{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted); text-decoration:none; }
+  h1{ margin:10px 0 4px; text-transform:uppercase; letter-spacing:0.03em; }
+  .updated{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted); }
+  main{ max-width:900px; margin:0 auto; padding:24px; }
+  .item{ display:flex; gap:16px; padding:16px 0; border-bottom:1px solid var(--line); }
+  .item img{ width:80px; height:80px; object-fit:cover; border-radius:6px; background:var(--surface); flex-shrink:0; }
+  .item .info{ flex:1; }
+  .item h2{ font-size:16px; margin:0 0 4px; font-weight:500; }
+  .item .sub{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); margin-bottom:6px; }
+  .item .price{ font-family:'JetBrains Mono',monospace; font-size:14px; }
+  .item .price .msrp{ text-decoration:line-through; color:var(--muted); margin-right:6px; }
+  .item .discount{ font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--hivis); white-space:nowrap; }
+  .go{ display:inline-block; margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; text-transform:uppercase; text-decoration:none; background:var(--chalk); color:var(--bg); padding:6px 10px; border-radius:5px; }
+  ul{ list-style:none; padding:0; }
+  li{ padding:10px 0; border-bottom:1px solid var(--line); }
+  li a{ font-size:16px; text-decoration:none; }
+  li a:hover{ color:var(--hivis); }
+  .count{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted); margin-left:8px; }
+</style>
+</head>
+<body>
+<header>
+  <a class="back" href="../index.html">&larr; LIVE DASHBOARD</a>
+  <h1>Browse by brand</h1>
+</header>
+<main>
+  <ul>
+    <li><a href="9pt9.html">9pt9</a><span class="count">56 on sale</span></li>
+    <li><a href="bilma.html">Bilma</a><span class="count">1 on sale</span></li>
+    <li><a href="craft-us.html">Craft (US)</a><span class="count">667 on sale</span></li>
+    <li><a href="district-vision-men-s.html">District Vision (Men&#39;s)</a><span class="count">65 on sale</span></li>
+    <li><a href="hermanos-koumori.html">Hermanos Koumori</a><span class="count">26 on sale</span></li>
+    <li><a href="maap.html">MAAP</a><span class="count">360 on sale</span></li>
+    <li><a href="participation.html">Participation</a><span class="count">5 on sale</span></li>
+    <li><a href="unna.html">UNNA</a><span class="count">17 on sale</span></li>
+    <li><a href="cafe-du-cycliste.html">cafe du cycliste</a><span class="count">164 on sale</span></li>
+    <li><a href="gramicci.html">gramicci</a><span class="count">150 on sale</span></li>
+    <li><a href="i-love-ugly.html">i love ugly</a><span class="count">44 on sale</span></li>
+    <li><a href="i-love-ugly-active.html">i love ugly active</a><span class="count">23 on sale</span></li>
+    <li><a href="praise-endurance.html">praise endurance</a><span class="count">25 on sale</span></li>
+  </ul>
+</main>
+</body>
+</html>

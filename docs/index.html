@@ -39,9 +39,7 @@
     backdrop-filter: blur(6px);
   }
   .top-inner{ max-width:1200px; margin:0 auto; display:flex; flex-wrap:wrap; align-items:baseline; gap:14px 24px; justify-content:space-between; }
-  .brand-mark{
-    display:flex; align-items:baseline; gap:12px;
-  }
+  .brand-mark{ display:flex; align-items:baseline; gap:12px; }
   h1{
     margin:0; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
     font-size: clamp(24px, 3.4vw, 34px);
@@ -54,12 +52,33 @@
   }
   .meta{ font-size:13px; color:var(--muted); font-family:'JetBrains Mono', monospace; }
 
-  .controls{
-    max-width:1200px; margin: 18px auto 0; padding: 0 24px;
-    display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+  /* Email capture banner */
+  .signup-banner{
+    max-width:1200px; margin: 18px auto 0; padding: 14px 24px;
+    background: var(--surface); border:1px solid var(--line); border-radius:10px;
+    display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;
   }
+  .signup-banner .copy{ font-size:13px; color:var(--muted); font-family:'JetBrains Mono', monospace; max-width:520px; }
+  .signup-banner .copy strong{ color:var(--chalk); }
+  .signup-form{ display:flex; gap:8px; flex-wrap:wrap; flex:1; max-width:420px; min-width:260px; }
+  .signup-form input[type="email"]{
+    flex:1; min-width:160px; font-family:'JetBrains Mono', monospace; font-size:13px;
+    background:var(--surface-2); color:var(--chalk); border:1px solid var(--line);
+    padding:9px 12px; border-radius:6px;
+  }
+  .signup-form input[type="email"]:focus{ outline:2px solid var(--hivis); outline-offset:1px; }
+  .signup-form button{
+    font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:700; text-transform:uppercase;
+    letter-spacing:0.04em; background:var(--hivis); color:var(--bg); border:none;
+    padding:9px 16px; border-radius:6px; cursor:pointer;
+  }
+  .signup-form button:hover{ background:#c2eb2e; }
+  .signup-note{ font-size:11px; color:var(--muted); font-family:'JetBrains Mono', monospace; width:100%; margin-top:2px; }
+
+  .controls{ max-width:1200px; margin: 18px auto 0; padding: 0 24px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
   #typeControls{ margin-top:8px; }
   #typeControls .chip{ border-color: rgba(212,255,61,0.25); }
+
   .chip{
     font-family:'JetBrains Mono', monospace; font-size:12px;
     border:1px solid var(--line); background:var(--surface); color:var(--muted);
@@ -84,18 +103,11 @@
     font-family:'JetBrains Mono', monospace; white-space:pre-wrap;
   }
 
-  .grid{
-    display:grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-    gap: 18px; margin-top: 8px;
-  }
+  .grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 18px; margin-top: 8px; }
 
   .card{
-    background: var(--surface);
-    border:1px solid var(--line);
-    border-radius: 10px;
-    overflow:hidden;
-    display:flex; flex-direction:column;
-    position:relative;
+    background: var(--surface); border:1px solid var(--line); border-radius: 10px;
+    overflow:hidden; display:flex; flex-direction:column; position:relative;
     transition: transform .15s ease, border-color .15s ease;
   }
   .card:hover{ transform: translateY(-3px); border-color: var(--hivis); }
@@ -121,48 +133,39 @@
   .body{ padding: 12px 14px 14px; display:flex; flex-direction:column; gap:8px; flex:1; }
   .brandline{ font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
   .title{ font-size:15px; font-weight:500; line-height:1.3; min-height:2.6em; }
+  .blurb{ font-size:11px; color:var(--muted); line-height:1.5; font-family:'JetBrains Mono', monospace; }
 
-  .split{
-    display:flex; align-items:flex-end; justify-content:space-between; gap:10px;
-    border-top: 1px dashed var(--line); padding-top:8px; margin-top:2px;
+  .lowest-ever-banner{
+    font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:700; letter-spacing:0.04em;
+    color: var(--bg); background: var(--hivis); border-radius:5px;
+    padding:5px 8px; text-align:center; text-transform:uppercase;
   }
+
+  .split{ display:flex; align-items:flex-end; justify-content:space-between; gap:10px; border-top: 1px dashed var(--line); padding-top:8px; margin-top:2px; }
   .prices{ display:flex; flex-direction:column; gap:2px; }
   .msrp{ font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--muted); text-decoration: line-through; }
   .sale{ font-family:'JetBrains Mono', monospace; font-size:18px; font-weight:700; color:var(--chalk); }
-  .discount{
-    font-family:'JetBrains Mono', monospace; font-weight:700; font-size:22px;
-    color: var(--hivis); line-height:1;
-  }
+  .discount{ font-family:'JetBrains Mono', monospace; font-weight:700; font-size:22px; color: var(--hivis); line-height:1; }
   .discount small{ font-size:10px; color:var(--muted); display:block; font-weight:400; letter-spacing:0.06em; }
 
   .variants{ display:flex; flex-wrap:wrap; gap:5px; margin-top:2px; }
-  .v-tag{
-    font-family:'JetBrains Mono', monospace; font-size:10px; padding:2px 6px; border-radius:3px;
-    border:1px solid var(--line); color:var(--muted);
-  }
+  .v-tag{ font-family:'JetBrains Mono', monospace; font-size:10px; padding:2px 6px; border-radius:3px; border:1px solid var(--line); color:var(--muted); }
   .v-tag.avail{ color:var(--chalk); border-color: rgba(212,255,61,0.4); }
   .v-tag.gone{ text-decoration: line-through; opacity:0.5; }
 
-  .fx-note{
-    font-family:'JetBrains Mono', monospace; font-size:9px; color: var(--hazard);
-    letter-spacing:0.03em; margin-top:-2px;
-  }
+  .fx-note{ font-family:'JetBrains Mono', monospace; font-size:9px; color: var(--hazard); letter-spacing:0.03em; margin-top:-2px; }
   .fx-note.ok{ color: var(--muted); }
 
   .go{
     margin-top:auto; text-align:center; text-decoration:none;
     font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:700;
     letter-spacing:0.05em; text-transform:uppercase;
-    color: var(--bg); background: var(--chalk);
-    padding:9px; border-radius:6px; transition: background .15s;
+    color: var(--bg); background: var(--chalk); padding:9px; border-radius:6px; transition: background .15s;
   }
   .go:hover{ background: var(--hivis); }
   .go:focus-visible{ outline:2px solid var(--hivis); outline-offset:2px; }
 
-  .empty{
-    text-align:center; padding: 80px 20px; color:var(--muted);
-    font-family:'JetBrains Mono', monospace; font-size:13px; line-height:1.7;
-  }
+  .empty{ text-align:center; padding: 80px 20px; color:var(--muted); font-family:'JetBrains Mono', monospace; font-size:13px; line-height:1.7; }
   .empty strong{ color:var(--chalk); display:block; font-family:'Oswald'; font-size:20px; margin-bottom:8px; letter-spacing:0.03em; text-transform:uppercase; }
 
   footer{ max-width:1200px; margin:0 auto; padding: 30px 24px 50px; color:var(--muted); font-size:12px; font-family:'JetBrains Mono', monospace; }
@@ -182,6 +185,21 @@
   </div>
 </header>
 
+<!--
+  EMAIL CAPTURE — replace YOUR_USERNAME_HERE with your actual Buttondown
+  username once you've created a free account at buttondown.com.
+  Swap the form action/inputs entirely if you use Mailchimp or another
+  provider instead — this is a plain HTML form, no JS SDK required.
+-->
+<form class="signup-banner" action="https://buttondown.com/api/emails/embed-subscribe/YOUR_USERNAME_HERE" method="post" target="popupwindow" onsubmit="window.open('https://buttondown.com/YOUR_USERNAME_HERE', 'popupwindow')">
+  <div class="copy"><strong>New sale items, delivered.</strong> No need to check back — get the best drops sent straight to you.</div>
+  <div class="signup-form">
+    <input type="email" name="email" placeholder="you@email.com" required>
+    <button type="submit">Subscribe</button>
+  </div>
+  <div class="signup-note">Free. No spam. Unsubscribe anytime.</div>
+</form>
+
 <div class="controls" id="controls" style="display:none;">
   <span class="chip active" data-brand="__all__">ALL BRANDS</span>
   <div class="spacer"></div>
@@ -190,6 +208,7 @@
     <option value="discount">Biggest discount</option>
     <option value="new">Newest first</option>
     <option value="price">Lowest price</option>
+    <option value="lowest_ever">All-time lows first</option>
   </select>
 </div>
 
@@ -280,23 +299,11 @@ async function load() {
   }
 
   function rebuildTypeChips() {
-    // Remove any previously-built type chips (keep the "ALL TYPES" one and the label)
     typeControls.querySelectorAll('.chip[data-type]:not([data-type="__all__"])').forEach(el => el.remove());
-
-    if (currentBrand === '__all__') {
-      typeControls.style.display = 'none';
-      return;
-    }
-
+    if (currentBrand === '__all__') { typeControls.style.display = 'none'; return; }
     const scoped = items.filter(i => i.brand === currentBrand);
     const types = [...new Set(scoped.map(i => i.product_type).filter(Boolean))].sort();
-
-    if (types.length <= 1) {
-      // Nothing meaningful to filter by for this brand
-      typeControls.style.display = 'none';
-      return;
-    }
-
+    if (types.length <= 1) { typeControls.style.display = 'none'; return; }
     typeControls.style.display = 'flex';
     types.forEach(t => {
       const chip = document.createElement('span');
@@ -324,6 +331,7 @@ async function load() {
     if (currentSort === 'discount') filtered.sort((a,b) => b.best_discount_pct - a.best_discount_pct);
     else if (currentSort === 'new') filtered.sort((a,b) => (b.is_new === a.is_new) ? b.best_discount_pct - a.best_discount_pct : (b.is_new ? 1 : -1));
     else if (currentSort === 'price') filtered.sort((a,b) => (a.sale_price_usd ?? a.sale_price ?? 0) - (b.sale_price_usd ?? b.sale_price ?? 0));
+    else if (currentSort === 'lowest_ever') filtered.sort((a,b) => (b.is_lowest_ever === a.is_lowest_ever) ? b.best_discount_pct - a.best_discount_pct : (b.is_lowest_ever ? 1 : -1));
 
     grid.innerHTML = '';
     filtered.forEach((item, idx) => grid.appendChild(card(item, idx+1)));
@@ -359,8 +367,6 @@ function card(item, rank) {
     .map(v => `<span class="v-tag ${v.available ? 'avail' : 'gone'}">${escapeHtml(v.title)}</span>`)
     .join('');
 
-  // Show USD whenever we have it (native USD, or successfully FX-converted).
-  // Otherwise show native currency with an explicit warning instead of guessing.
   const nativeCur = item.currency || 'USD';
   const showUsd = nativeCur === 'USD' || item.fx_converted;
   const dispMsrp = showUsd ? money(item.msrp_usd ?? item.msrp, 'USD') : money(item.msrp, nativeCur);
@@ -384,7 +390,9 @@ function card(item, rank) {
     <div class="body">
       <div class="brandline">${escapeHtml(item.brand)} · ${escapeHtml(item.product_type || 'Uncategorized')}</div>
       <div class="title">${escapeHtml(item.title)}</div>
+      ${item.brand_blurb ? `<div class="blurb">${escapeHtml(item.brand_blurb)}</div>` : ''}
       ${variantTags ? `<div class="variants">${variantTags}</div>` : ''}
+      ${item.is_lowest_ever ? '<div class="lowest-ever-banner">Lowest price we\'ve ever tracked</div>' : ''}
       <div class="split">
         <div class="prices">
           <div class="msrp mono">${dispMsrp}</div>

@@ -96,38 +96,6 @@
     "enabled": true
   },
   {
-    "name": "Ante Berlin",
-    "store_base": "https://anteberlin.com/",
-    "url": "https://anteberlin.com/collections/archive/products.json?country=US",
-    "currency": "USD",
-    "currency_confirmed": true,
-    "enabled": true
-  },
-  {
-    "name": "Participation",
-    "store_base": "https://participationco.com/",
-    "url": "https://participationco.com/collections/all-products.json?country=US",
-    "currency": "USD",
-    "currency_confirmed": true,
-    "enabled": true
-  },
-  {
-    "name": "Bilma",
-    "store_base": "https://bilmaclub.com/",
-    "url": "https://bilmaclub.com/en-intl/collections/men/products.json?country=US",
-    "currency": "USD",
-    "currency_confirmed": true,
-    "enabled": true
-  },
-  {
-    "name": "Patencials",
-    "store_base": "https://patencials.com/",
-    "url": "https://patencials.com/collections/all/products.json?country=US",
-    "currency": "USD",
-    "currency_confirmed": true,
-    "enabled": true
-  },
-  {
     "name": "MAAP",
     "type": "shopify_storefront_graphql",
     "store_base": "https://maap.cc",
@@ -138,5 +106,149 @@
     "currency": "USD",
     "currency_confirmed": false,
     "enabled": true
+  },
+  {
+    "name": "DEADLAST",
+    "store_base": "https://deadlast.run",
+    "url": "https://deadlast.run/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "Currently Running",
+    "store_base": "https://currentlyrunning.com",
+    "url": "https://currentlyrunning.com/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "Miler Running",
+    "store_base": "https://milerrunning.com",
+    "url": "https://milerrunning.com/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "PATH Projects",
+    "store_base": "https://pathprojects.com",
+    "url": "https://pathprojects.com/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "Rapha",
+    "store_base": "https://www.rapha.cc",
+    "url": "",
+    "currency": "GBP",
+    "currency_confirmed": false,
+    "enabled": false
+  },
+  {
+    "name": "Ciele Athletics",
+    "store_base": "https://cieleathletics.com",
+    "url": "https://cieleathletics.com/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "Pas Normal Studios",
+    "store_base": "https://pasnormalstudios.com",
+    "url": "https://pasnormalstudios.com/products.json",
+    "currency": "EUR",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "DOXA Run",
+    "store_base": "https://doxarun.eu",
+    "url": "https://doxarun.eu/products.json",
+    "currency": "EUR",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "POC",
+    "store_base": "https://www.pocsports.com",
+    "url": "",
+    "currency": "EUR",
+    "currency_confirmed": false,
+    "enabled": false
+  },
+  {
+    "name": "CIRCUS Running",
+    "store_base": "https://www.circusrunning.co",
+    "url": "https://www.circusrunning.co/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "28 Club",
+    "store_base": "https://28club.co.uk",
+    "url": "https://28club.co.uk/products.json",
+    "currency": "GBP",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "Wyrd Running",
+    "store_base": "https://wyrdrunning.com",
+    "url": "",
+    "currency": "USD",
+    "currency_confirmed": false,
+    "enabled": false
+  },
+  {
+    "name": "INNER SELF Running",
+    "store_base": "https://innerselfrunning.com",
+    "url": "https://innerselfrunning.com/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "ACT Running",
+    "store_base": "https://www.act-running.com",
+    "url": "https://www.act-running.com/products.json",
+    "currency": "EUR",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "Chance Running",
+    "store_base": "https://chancerunning.com",
+    "url": "https://chancerunning.com/collections/last-chance/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "Raide Research",
+    "store_base": "https://raideresearch.com",
+    "url": "https://raideresearch.com/products.json",
+    "currency": "USD",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "ARCS London",
+    "store_base": "https://arcslondon.com",
+    "url": "https://arcslondon.com/products.json",
+    "currency": "GBP",
+    "currency_confirmed": true,
+    "enabled": true
+  },
+  {
+    "name": "Research Studio",
+    "store_base": "https://researchstudio.com",
+    "url": "",
+    "currency": "USD",
+    "currency_confirmed": false,
+    "enabled": false
   }
 ]
